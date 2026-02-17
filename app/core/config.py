@@ -12,4 +12,6 @@ class Settings(BaseSettings):
     EITAA_TOKEN: str = ""
     DEFAULT_EITAA_CHAT_ID: str = ""
 
+    DATABASE_URL: str
+
 settings = Settings()
