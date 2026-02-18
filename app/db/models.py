@@ -15,7 +15,8 @@ class Message(Base):
     type: Mapped[str] = mapped_column(String(16), nullable=False)  # TEXT | PHOTO
     text: Mapped[str | None] = mapped_column(Text, nullable=True)
 
-    # کلید dedupe برای جلوگیری از ثبت تکراری پیام‌ها
+    telegram_update_id: Mapped[str | None] = mapped_column(String(64), nullable=True)
+
     dedupe_key: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
 
     created_at: Mapped[DateTime] = mapped_column(DateTime(timezone=True), server_default=func.now(), nullable=False)
