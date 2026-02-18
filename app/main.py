@@ -4,8 +4,12 @@ from app.db.session import get_db
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from app.api.routes.telegram_webhook import router as telegram_router
+
 
 app = FastAPI(title=settings.APP_NAME)
+
+app.include_router(telegram_router, tags=["telegram"])
 
 @app.get("/health")
 def health():
@@ -16,3 +20,6 @@ def health():
 def db_check(db: Session = Depends(get_db)):
     v = db.execute("SELECT 1").scalar()
     return {"ok": True, "db": v}
+
+
+
