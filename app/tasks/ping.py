@@ -1,9 +1,9 @@
 from __future__ import annotations
 from datetime import datetime, timezone
 
-from app.core.celery_app import celery
+from celery import shared_task
 
-@celery.task(name="app.tasks.ping.ping")
+@shared_task(name="app.tasks.ping.ping")
 def ping(payload: str = "pong") -> dict:
     return {
         "ok": True,

@@ -9,6 +9,9 @@ from app.db.session import get_db
 from app.db.models import Message, MediaAsset
 from app.services.telegram_parser import parse_telegram_update
 
+from app.services.orchestrator import fanout_message
+
+
 router = APIRouter(prefix="/webhook/telegram", tags=["telegram"])
 
 
@@ -47,6 +50,8 @@ async def telegram_webhook(
         return {"ok": True, "deduped": True}
 
     db.refresh(msg)
+
+    created = fanout_message(db, msg.id)
 
     if parsed["type"] == "PHOTO" and parsed.get("telegram_file_id"):
         db.add(

@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 from celery.result import AsyncResult
 from app.tasks.ping import ping
 from app.core.celery_app import celery
+import json
+from app.db.models import Destination
 
 from app.api.routes.telegram_webhook import router as telegram_router
 
@@ -37,3 +39,21 @@ def task_status(task_id: str):
     return {"task_id": task_id, "state": res.state, "result": res.result}
 
 
+
+
+@app.post("/admin/bootstrap-destination")
+def bootstrap_destination(db: Session = Depends(get_db)):
+    existing = db.query(Destination).filter(Destination.kind == "EITAA").first()
+    if existing:
+        return {"ok": True, "created": False, "destination_id": str(existing.id)}
+
+    dest = Destination(
+        kind="EITAA",
+        chat_id=settings.DEFAULT_EITAA_CHAT_ID,
+        credentials_json=json.dumps({"token": settings.EITAA_TOKEN}) if settings.EITAA_TOKEN else None,
+        is_active=True,
+    )
+    db.add(dest)
+    db.commit()
+    db.refresh(dest)
+    return {"ok": True, "created": True, "destination_id": str(dest.id)}
