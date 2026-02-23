@@ -1,6 +1,6 @@
 # app/integrations/eitaayar.py
 from __future__ import annotations
-
+import certifi
 import requests
 
 
@@ -33,6 +33,7 @@ def send_message(*, token: str, chat_id: str, text: str) -> dict:
             _url(token, "sendMessage"),
             data={"chat_id": chat_id, "text": text},
             timeout=20,
+            verify=certifi.where()
         )
     except (requests.Timeout, requests.ConnectionError) as e:
         raise EitaaTransientError(f"network error: {e}") from e
